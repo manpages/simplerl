@@ -23,7 +23,6 @@ note(finish) ->
 find_notes(Path) ->
     case file:list_dir(Path) of
 		{ok, Files} ->
-			io:format("Files=~p~n",[Files]),
 			find_notes(
 				lists:map(
 					fun(X) -> Path ++ X end,
@@ -62,7 +61,6 @@ get_all_lines(Device) ->
 out(A) ->
 	% change that to chroot in a category
 	Root = A#arg.docroot,
-	% theroot = "",
 
 	% getting header and footer
 	Header = readlines(Root ++ "/header.html"),
