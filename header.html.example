@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+	<head>
+		<link href="index.css" rel="stylesheet">
+		<title>nonode@nohost&lt;0.42.0&gt;</title>
+	</head>
+
+	<body>
+		<div id="header">
+			<span id="logo">
+				
+			</span>
+			</div>
+		</div>
+		<div id="content">
+			<div id="sideModules">
+				<h3>Internal links:</h3>
+<!--INTERNAL-->
+<!--
+		category.php will insert
+		stuff before "INTERNAL".
+-->
+			</div>
