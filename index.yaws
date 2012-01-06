@@ -1,0 +1,79 @@
+<erl>
+% TODO: Add page compiler
+% TODO: RSS for blog
+% TODO: Re-write category.php using sed instead of php
+
+
+% source code:
+
+% wrap notes in divs
+note(start) ->
+"
+<div class=\"note\">
+<div class=\"noteText\">
+
+";
+note(finish) ->
+"
+</div>
+</div>
+".
+
+% get the list of all .note files
+find_notes(Path) ->
+    case file:list_dir(Path) of
+		{ok, Files} ->
+			io:format("Files=~p~n",[Files]),
+			find_notes(
+				lists:map(
+					fun(X) -> Path ++ X end,
+					lists:sort(Files)
+				),
+				fun(X) -> note(start) ++ readlines(X) ++ note(finish) end, 
+				[]
+			);
+		{error, _} -> false
+	end.
+find_notes([], F, HTML) -> HTML;
+find_notes([H|T], F, HTML) ->
+	NHTML = case (string:rstr(H, "note") > 0) of
+		true  -> 
+			F(H) ++ HTML;
+		false -> 
+			HTML
+	end,
+	find_notes(T, F, NHTML)
+.
+
+% yeah, recursion and list re-building. fucked up for huge files
+readlines(FileName) ->
+    {ok, Device} = file:open(FileName, [read]),
+    try get_all_lines(Device)
+      after file:close(Device)
+    end.
+get_all_lines(Device) ->
+    case io:get_line(Device, "") of
+        eof  -> [];
+        Line -> Line ++ get_all_lines(Device)
+    end.
+
+
+% here's your stuff :)
+out(A) ->
+	% change that to chroot in a category
+	Root = A#arg.docroot,
+	% theroot = "",
+
+	% getting header and footer
+	Header = readlines(Root ++ "/header.html"),
+	Footer = readlines(Root ++ "/footer.html"),
+
+	% getting notes, building body
+	Dir = string:substr(A#arg.fullpath, 1, 
+		string:rchr(A#arg.fullpath, $/)
+	),
+	Body = find_notes(Dir),
+
+	% giving out content
+	{html, Header ++ Body ++ Footer}.
+</erl>
