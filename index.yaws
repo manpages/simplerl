@@ -3,27 +3,35 @@
 % TODO: RSS for blog
 % TODO: Re-write category.php using sed instead of php
 
+%%%% BEGIN CONFIG %%%%
+	% chroot:
+	root(A) ->
+		A#arg.docroot. %++ "/newRoot".
+
+	% html appending order (queue/stack):
+	%% either Current ++ New or vice-versa
+	glue(NewHTML, CurrentHTML) ->
+		NewHTML ++ CurrentHTML.
+
+	% how notes are wrapped:
+	note(start) ->
+	"
+	<div class=\"note\">
+	<div class=\"noteText\">
+
+	";
+	note(finish) ->
+	"
+	</div>
+	</div>
+	".
+%%%%% END CONFIG %%%%%
 
 % source code:
-
-% wrap notes in divs
-note(start) ->
-"
-<div class=\"note\">
-<div class=\"noteText\">
-
-";
-note(finish) ->
-"
-</div>
-</div>
-".
-
 % get the list of all .note files
 find_notes(Path) ->
     case file:list_dir(Path) of
 		{ok, Files} ->
-			io:format("Files=~p~n",[Files]),
 			find_notes(
 				lists:map(
 					fun(X) -> Path ++ X end,
@@ -38,7 +46,7 @@ find_notes([], F, HTML) -> HTML;
 find_notes([H|T], F, HTML) ->
 	NHTML = case (string:rstr(H, "note") > 0) of
 		true  -> 
-			F(H) ++ HTML;
+			glue(F(H), HTML);
 		false -> 
 			HTML
 	end,
@@ -61,8 +69,7 @@ get_all_lines(Device) ->
 % here's your stuff :)
 out(A) ->
 	% change that to chroot in a category
-	Root = A#arg.docroot,
-	% theroot = "",
+	Root = root(A),
 
 	% getting header and footer
 	Header = readlines(Root ++ "/header.html"),
