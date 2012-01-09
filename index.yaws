@@ -68,7 +68,6 @@ get_all_lines(Device) ->
 
 % here's your stuff :)
 out(A) ->
-	% change that to chroot in a category
 	Root = root(A),
 
 	% getting header and footer
